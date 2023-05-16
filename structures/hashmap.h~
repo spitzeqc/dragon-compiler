@@ -1,0 +1,24 @@
+#ifndef HASHMAP_H
+#define HASHMAP_H
+
+#define PRIME 211
+
+#include <stdbool.h>
+
+
+
+typedef struct bucket_node_s {
+	char* name;
+	char* value;
+	struct bucket_node_s* next;
+} bucket_node_t;
+
+bucket_node_t* hashmap_make();
+void hashmap_free( bucket_node_t** h );
+
+void hashmap_add( bucket_node_t* h, char* name, int val );
+bool hashmap_remove( bucket_node_t* h, char* name );
+int hashmap_get_value( bucket_node_t* h, char* name );
+bool hashmap_update_value( bucket_node_t* h, char* name, int val );
+
+#endif

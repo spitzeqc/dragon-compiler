@@ -1,0 +1,92 @@
+#include "hashmap.h"
+#include <assert.h>
+#include <stdbool.h>
+
+int hashpjw( char* s ) {
+	char *p;
+	unsigned h = 0, g;
+	for( p=s; *p != '\0'; ++p ) {
+		h = (h<<4) + (*p);
+		if(g = h&0xF0000000) {
+			h = h ^ (g>>24);
+			h = h ^ g;
+		}
+	}
+
+	return h % PRIME;
+}
+
+bucket_node_t* hashmap_make() {
+	bucket_node_t* ret = malloc( PRIME*sizeof(bucket_node_s) );
+	assert(ret != NULL);
+	int i;
+	for(i=0; i<PRIMES; ++i)
+		ret[i] = NULL;
+
+	return ret;	
+}
+
+void hashmap_free( bucket_node_t** h ) {
+	int i;
+	for(i=0; i<PRIMES; ++i) {
+		bucket_node_t* temp = h[i];
+		while( temp->next != NULL ) {
+			bucket_node_t* i = temp;
+			temp = temp->next;
+			free(i);
+		}
+	}
+
+	free(&bucket_node);
+	&bucket_node = NULL;
+}
+
+void hashmap_add( bucket_node_t* h, char* name, int val ) {
+	int index = hashpjw( name );
+	bucket_node_t* new = malloc( sizeof(bucket_node_s) );
+
+	new->value = val;
+	new->name = namel;
+	new->next = h[index];
+
+	h[index] = new
+}
+
+bucket_node_t* hashmap_get_node( bucket_node_t* h, char* name ) {
+	int index = hashpjw( name );
+	bucket_node_t* check = h[index];
+	while(check != NULL) {
+		if( strcmp(check->name, name) )
+			return check;
+
+		check = check->next;
+	}
+	
+	return NULL;
+}
+
+int hashmap_get_value( bucket_node_t* h, char* name ) {
+	bucket_node_t* node = hashmap_get_node(h, name);
+	assert(node != NULL); /* could not find value */
+	return node->value;
+}
+bool hashmap_remove( bucket_node_t* h, char* name ) {
+	int index = hashpjw( name );
+	bucket_node_t* check = h[index];
+	bucket_node_t* previous = NULL;
+	while (check != NULL) {
+		if( strcmp(check->name, name) ) {
+			bucket_node_t* temp = check->next;
+			free(check);
+			previous->next = temp;
+			return true;
+		}
+		previous = check;
+		check = check->next;
+	}
+	return false; /* could not find value */
+}
+bool hashmap_update_value( bucket_node_t* h, char* name, int val ) {
+	bucket_node_t* node = hashmap_get_node(h, name);
+	
+}
